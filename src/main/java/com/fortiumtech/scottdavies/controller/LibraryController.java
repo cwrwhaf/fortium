@@ -24,10 +24,17 @@ public class LibraryController {
 	@Autowired
 	private LibraryService libraryService;
 
+
 	@GetMapping("/api/books")
 	ResponseEntity<List<ApiBook>> getAllBooks(@RequestParam Integer page, @RequestParam Integer limit) {
 
 		return ResponseEntity.ok(libraryService.getAllBooks(page, limit));
+	}
+	
+	@GetMapping("/api/books/search")
+	ResponseEntity<List<ApiBook>> searchBooks(@RequestParam String filterByGenre, @RequestParam Integer page, @RequestParam Integer limit) {
+
+		return ResponseEntity.ok(libraryService.searchBooks(filterByGenre, page, limit));
 	}
 
 	@GetMapping("/api/books/{id}")
@@ -40,6 +47,14 @@ public class LibraryController {
 	ResponseEntity<List<ApiAuthor>> getAllAuthors(@RequestParam Integer page, @RequestParam Integer limit) {
 
 		return ResponseEntity.ok(libraryService.getAllAuthors(page, limit));
+	}
+	
+	
+	
+	@GetMapping(path="/api/authorspro", params = {"projection"})
+	ResponseEntity<List<?>> getAllAuthorsPojection(@RequestParam Integer page, @RequestParam Integer limit, @RequestParam String projection) {
+
+		return ResponseEntity.ok(libraryService.getAllAuthorsProjection(page, limit, projection));
 	}
 
 	@GetMapping("/api/authors/{id}")

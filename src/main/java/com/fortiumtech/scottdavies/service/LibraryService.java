@@ -1,11 +1,18 @@
 package com.fortiumtech.scottdavies.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.stereotype.Service;
 
 import com.fortiumtech.scottdavies.api.exception.AlreadyExistsException;
@@ -47,11 +54,40 @@ public class LibraryService {
 
 	@Autowired
 	private ApiBookToBookTransformer apiBookTransformer;
+	
+	@Autowired
+	private ProjectionFactory projectionFactory;
 
+	
+	interface Auth {
+		@Value("#{target.firstName + ' ' + target.lastName}")
+	    String getFullName();
+	}
+	interface Name {
+		@Value("#{target.firstName}")
+	    String getFirstName();
+	}
+	
 	public List<ApiAuthor> getAllAuthors(Integer page, Integer limit) {
 		return authorRepository.findAll(PageRequest.of(page, limit)).stream().map(authorTransformer::transform)
 				.collect(Collectors.toList());
 	}
+
+	private Map<String, Class<?>> projections;
+	
+	@PostConstruct
+	private void init() {
+		projections = new HashMap<>();
+		projections.put("auth", Auth.class);
+		projections.put("name", Name.class);
+	}
+	
+	
+	public List<?> getAllAuthorsProjection(Integer page, Integer limit, String projection) {
+		return authorRepository.findAll(PageRequest.of(page, limit)).stream()
+				.map(a -> projectionFactory.createProjection(projections.get(projection), a)).collect(Collectors.toList());
+	}
+	
 
 	public Optional<ApiAuthor> getAuthorById(long authorId) {
 		return authorRepository.findById(authorId).map(authorTransformer::transform);
@@ -86,6 +122,12 @@ public class LibraryService {
 
 			return apiBook.getId();
 		}).orElseThrow(() -> new NotFoundException("Cannot find author " + id));
+	}
+
+	public List<ApiBook>  searchBooks(String filter, Integer page, Integer limit) {
+		Page<Book> response = bookRepository.findByTitleContaining(PageRequest.of(page, limit), filter);
+		System.out.println(response);
+		return null;
 	}
 
 }
