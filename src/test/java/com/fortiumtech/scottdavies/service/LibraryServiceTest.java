@@ -64,7 +64,7 @@ public class LibraryServiceTest {
 	@BeforeEach
 	public void setup() {
 		libraryService = new LibraryService(authorRepository, bookRepository, authorTransformer, bookTransformer,
-				autorRequestTransformer, apiBookTransformer);
+				autorRequestTransformer, apiBookTransformer, null, null);
 		author = new Author(AUTHOR_ID, AUTHOR_FIRST_NAME, AUTHOR_LAST_NAME);
 		book = new Book(BOOK_ID, BOOK_TITLE, BOOK_DESCRIPTION, author);
 	}

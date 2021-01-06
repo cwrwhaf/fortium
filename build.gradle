@@ -10,6 +10,7 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 configurations {
+ jaxb
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
@@ -26,6 +27,13 @@ ext {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+	
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-web-services'
+
+	implementation 'wsdl4j:wsdl4j'
+    jaxb("org.glassfish.jaxb:jaxb-xjc")
+	
 	compile 'org.modelmapper:modelmapper:2.3.8'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.h2database:h2'
@@ -43,3 +51,39 @@ asciidoctor {
 	inputs.dir snippetsDir
 	dependsOn test
 }
+
+//bootJar {
+  //  archiveBaseName = 'gs-producing-web-service'
+   // archiveVersion =  '0.1.0'
+//}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+            srcDir 'build/generated-sources/jaxb'
+        }
+    }
+}
+
+task genJaxb {
+    ext.sourcesDir = "${buildDir}/generated-sources/jaxb"
+    ext.schema = "src/main/resources/countries.xsd"
+
+    outputs.dir sourcesDir
+
+    doLast() {
+        project.ant {
+            taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask",
+                    classpath: configurations.jaxb.asPath
+            mkdir(dir: sourcesDir)
+
+            xjc(destdir: sourcesDir, schema: schema) {
+                arg(value: "-wsdl")
+                produces(dir: sourcesDir, includes: "**/*.java")
+            }
+        }
+    }
+}
+
+compileJava.dependsOn genJaxb
