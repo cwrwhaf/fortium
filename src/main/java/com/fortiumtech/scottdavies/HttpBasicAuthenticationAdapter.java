@@ -36,7 +36,7 @@ public class HttpBasicAuthenticationAdapter extends WebSecurityConfigurerAdapter
 	protected void configure(HttpSecurity http) throws Exception {
 		//http.csrf().disable().httpBasic().and().authorizeRequests().anyRequest().authenticated();
 	
-		start here, copy works addFilterAfter and order and see if this causes any problems
+	
 		 http
 		 //.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 		 
