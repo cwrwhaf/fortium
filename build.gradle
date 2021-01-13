@@ -32,7 +32,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web-services'
 
 implementation 'org.springframework.boot:spring-boot-starter-security'
-compile group: 'com.sun.xml.wss', name: 'xws-security', version: '3.0'
+implementation (group: 'com.sun.xml.wss', name: 'xws-security', version: '3.0') {
+            exclude group: 'javax.xml.crypto', module: 'xmldsig'
+        }
+            
 compile group: 'org.springframework.ws', name: 'spring-ws-security', version: '3.0.10.RELEASE'
 implementation 'org.springframework.security:spring-security-test'
 
