@@ -1,8 +1,10 @@
 package com.fortiumtech.scottdavies;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,11 +23,16 @@ public class HttpBasicAuthenticationAdapter extends WebSecurityConfigurerAdapter
 //	PasswordEncoderFactories.createDelegatingPasswordEncoder()
 //	
 	
-	@Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-          .withUser("user").password(PasswordEncoderFactories.createDelegatingPasswordEncoder().encode("password"))
-          .authorities("ROLE_USER");
+//	@Autowired
+//    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+//        auth.inMemoryAuthentication()
+//          .withUser("user").password(PasswordEncoderFactories.createDelegatingPasswordEncoder().encode("password"))
+//          .authorities("ROLE_USER");
+//    }
+	
+	@Bean
+    public AuthenticationManager authenticationManager() throws Exception {
+    	return super.authenticationManager();
     }
 	
 	@Override
@@ -40,8 +47,8 @@ public class HttpBasicAuthenticationAdapter extends WebSecurityConfigurerAdapter
 		    .antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
 		    .antMatchers("/api/books").authenticated()
 		    
-		    .antMatchers("/ws/unsecured").permitAll()
-		    .antMatchers("/ws/**").authenticated()
+		   // .antMatchers("/ws/**").permitAll()
+		    //.antMatchers("/ws/**").authenticated()
 		    .and()
 		    .httpBasic()
 		   // 
