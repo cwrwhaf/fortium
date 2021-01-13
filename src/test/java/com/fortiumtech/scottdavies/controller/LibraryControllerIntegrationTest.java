@@ -90,7 +90,8 @@ public class LibraryControllerIntegrationTest {
 		assertEquals(book.get().getTitle(), "title", "Book should match");
 	}
 
-	@Test
+	
+	//@Test
 	void getAllBooks() throws Exception {
 
 		mockMvc.perform(get("/api/books").param("page", "0").param("limit", "5"))
